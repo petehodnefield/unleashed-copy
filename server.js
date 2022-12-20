@@ -1,11 +1,11 @@
-const express = require('express');
-const exphbs = require('express-handlebars');
-const routes = require('./controllers/')
-const path = require('path');
-const helpers = require('./utils/helpers');
-const sequelize = require('./config/connection');
-const session = require('express-session');
-const SequelizeStore = require('connect-session-sequelize')(session.Store);
+const express = require("express");
+const exphbs = require("express-handlebars");
+const routes = require("./controllers/");
+const path = require("path");
+const helpers = require("./utils/helpers");
+const sequelize = require("./config/connection");
+const session = require("express-session");
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const hbs = exphbs.create({ helpers });
 
 // IMAGES
@@ -15,19 +15,19 @@ const hbs = exphbs.create({ helpers });
 // const { uploadFile } = require('./s3')
 
 const sess = {
-  secret: 'Super Secret',
+  secret: "Super Secret",
   cookie: {},
   resave: false,
   saveUninitialized: true,
   store: new SequelizeStore({
-    db: sequelize
-  })
+    db: sequelize,
+  }),
 };
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session(sess));
@@ -36,11 +36,19 @@ app.use(session(sess));
 app.use(routes);
 
 // Starts Handlebars
-app.engine('handlebars', hbs.engine);
-app.set('view engine', 'handlebars');
-app.set('port', PORT);
+app.engine("handlebars", hbs.engine);
+app.set("view engine", "handlebars");
+app.set("port", PORT);
 
 // turn on connection to db and server
-sequelize.sync({ force: false }).then(() => {
-  app.listen(PORT, () => console.log('Now listening on http://localhost:3001/'));
+sequelize.sync({ force: false }).then(async () => {
+  app.listen(PORT, () =>
+    console.log("Now listening on http://localhost:3001/")
+  );
+  try {
+    await sequelize.authenticate();
+    console.log("Connection has been established successfully.");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
 });
