@@ -42,13 +42,13 @@ app.set("port", PORT);
 
 // turn on connection to db and server
 sequelize.sync({ force: false }).then(async () => {
-  app.listen(PORT, () =>
-    console.log("Now listening on http://localhost:3001/")
-  );
   try {
     await sequelize.authenticate();
     console.log("Connection has been established successfully.");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
+  app.listen(PORT, () =>
+    console.log("Now listening on http://localhost:3001/")
+  );
 });
